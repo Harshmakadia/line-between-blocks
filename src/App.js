@@ -1,86 +1,101 @@
 import React, { Component } from 'react';
 import './App.css';
-import LineTo, { SteppedLineTo } from 'react-lineto';
-class Block extends Component {
-  render() {
-      const { top, left, color, className } = this.props;
-      const style = { top, left, backgroundColor: color };
-      return (
-          <div
-              className={`block ${className}`}
-              style={style}
-              onMouseOver={this.props.onMouseOver}
-              onMouseOut={this.props.onMouseOut}
-          >
-              {this.props.children}
-          </div>
-      );
-  }
-}
+import Tree from "react-d3-tree";
 
-class App extends Component {
-  render() {
-    const style = {
-        delay: true,
-        borderColor: '#ddd',
-        borderStyle: 'solid',
-        borderWidth: 3,
-    };
-    return (
-        <fieldset id="stepped-test">
-            <legend>Stepped Test</legend>
+const svgSquare = {
+    shape: "rect",
+    shapeProps: {
+        width: 20,
+        height: 20,
+        x: -10,
+        y: -10
+    }
+};
 
-            Demonstrate how to draw stepped lines.
+const myTreeData = [
+    {
+        name: "Top Level",
+        attributes: {
+            "Node": "Entry"
+        },
+        children: [
+            {
+                name: "Level 2: A",
+                attributes: {
+                    "Node": "Child"
+                },
+                children: [
+                    {
+                        name: "Sub Child 1",
+                        attributes: {
+                            "Node": "Sub Child"
+                        }
+                    },
+                    {
+                        name: "Sub Child 2",
+                        attributes: {
+                            "Node": "Sub Child"
+                        }
+                    },
+                    {
+                        name: "Sub Child 3",
+                        attributes: {
+                            "Node": "Sub Child"
+                        },
+                        children: [
+                            {
+                                name: "Sub Sub Child 1",
+                            },
+                            {
+                                name: "Sub Sub Child 2",
+                            },
+                            {
+                                name: "Sub Sub Child 3",
+                            },
+                            {
+                                name: "Sub Sub Child 4",
+                            }
+                        ]
+                    },
+                    {
+                        name: "Sub Child 4",
+                        attributes: {
+                            "Node": "Sub Child"
+                        }
+                    }
+                ]
+            },
+            {
+                name: "Level 2: B"
+            }
+        ]
+    }
+];
 
-            <Block
-                className="stepped-A"
-                top="50px"
-                left="90px"
-                color="#00f"
-                >A</Block>
-            <Block
-                className="stepped-B"
-                top="150px"
-                left="20px"
-                color="#00f"
-                >B</Block>
-            <Block
-                className="stepped-C"
-                top="150px"
-                left="90px"
-                color="#00f"
-                >C</Block>
-            <Block
-                className="stepped-D"
-                top="150px"
-                left="160px"
-                color="#00f"
-                >D</Block>
-            <Block
-                className="stepped-E"
-                top="50px"
-                left="300px"
-                color="#00f"
-                >E</Block>
-            <Block
-                className="stepped-F"
-                top="120px"
-                left="300px"
-                color="#00f"
-                >F</Block>
-            <SteppedLineTo from="stepped-A" to="stepped-B"
-                fromAnchor="bottom" toAnchor="top" {...style} />
-            <SteppedLineTo from="stepped-A" to="stepped-C"
-                fromAnchor="bottom" toAnchor="top" {...style} />
-            <SteppedLineTo from="stepped-A" to="stepped-D"
-                fromAnchor="bottom" toAnchor="top" {...style} />
-            <SteppedLineTo from="stepped-A" to="stepped-E"
-                fromAnchor="right" toAnchor="left" orientation="h" {...style} />
-            <SteppedLineTo from="stepped-A" to="stepped-F"
-                fromAnchor="right" toAnchor="left" orientation="h" {...style} />
-        </fieldset>
-    );
-}
+class App extends React.Component {
+    constructor() {
+        super();
+        this.trackData = this.trackData.bind(this);
+    }
+
+    trackData(nodeData, evt) {
+        console.log({ nodeData, evt });
+    }
+
+    render() {
+        return (
+            <div id="treeWrapper" style={{ width: "100%", height: "100vh" }}>
+                <Tree
+                    collapsible={true}
+                    onClick={(nodeData, evt) => this.trackData(nodeData, evt)}
+                    nodeSvgShape={svgSquare}
+                    data={myTreeData}
+                    pathFunc="straight"
+                    orientation="vertical"
+                />
+            </div>
+        );
+    }
 }
 
 export default App;
