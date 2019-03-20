@@ -5,12 +5,14 @@ import Tree from "react-d3-tree";
 const svgSquare = {
     shape: "rect",
     shapeProps: {
-        width: 20,
-        height: 20,
+        width: 140,
+        height: 30,
         x: -10,
-        y: -10
+        y: -25
     }
 };
+
+const seperation = {siblings: 2, nonSiblings: 2}
 
 const myTreeData = [
     {
@@ -104,6 +106,7 @@ class App extends React.Component {
             <div id="treeWrapper" style={{ width: "100%", height: "100vh" }}>
                 You Clicked - {this.state.name}
                 <Tree
+                    separation={seperation}
                     collapsible={true}
                     onClick={(nodeData, evt) => this.trackData(nodeData, evt)}
                     nodeSvgShape={svgSquare}
