@@ -12,6 +12,21 @@ const svgSquare = {
     }
 };
 
+const diamond = {
+    shape: "polygon",
+    shapeProps: {
+        width: "10px",
+        height: "20px",
+        x: "-10px",
+        y: "-10px",
+        points:"25,2.5 10,44.5 44.5,19.5 2.5,19.5 40,44.5",
+        fill:'lime',
+        stroke:'purple',
+        strokeWidth:1,
+        fillRule:'nonzero',
+    }
+          }
+
 const seperation = {siblings: 2, nonSiblings: 2}
 
 const myTreeData = [
