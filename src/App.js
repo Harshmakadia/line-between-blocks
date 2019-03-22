@@ -41,6 +41,24 @@ const myTreeData = [
                 children: [
                     {
                         name: "Sub Child 1",
+                        children: [
+                            {
+                                name: "Subber Child 1",
+                                children: [
+                                    {
+                                        name: "Yes node",
+                                        children: [
+                                            {
+                                                name: "Yes 1"
+                                            },
+                                            {
+                                                name: "Yes 2"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
                     },
                     {
                         name: "Sub Child 2",
