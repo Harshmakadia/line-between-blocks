@@ -13,7 +13,7 @@ export const getMasterData = function(){
       "index": 1,
       "options": [],
       "parameter": "",
-      "resolvedQuery": "",
+      "resolvedQuery": "Which Page?",
       "sequence": {
         "default_next_dialog": 2,
         "jump_to": [
