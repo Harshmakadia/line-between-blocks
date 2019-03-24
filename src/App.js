@@ -3,7 +3,7 @@ import './App.css';
 import Tree from "react-d3-tree";
 import { getMasterData } from './masterData.jsx';
 import { findIndexNested }  from './helper.jsx';
-import { getCurrentIndexProp } from './helper.jsx';
+import { findByPath } from './helper.jsx';
 
 const svgSquare = {
     shape: "rect",
@@ -162,50 +162,134 @@ class App extends React.Component {
 
         // Main action begins here
         const wotnotMessages = jaiu;
-        const wotnotData = []
+        const wotnotData = [];
+        let previousPathData = [];
         // wotnotMessages.length
-        for(let h=0; h < 2; h++){
+        for(let h=0; h < 6; h++){
 
             // Before processing it check if index is already present
             // In the nested structure of parent child
             if(!!wotnotData[0] && !!wotnotData[0].children){
                 const checker = findIndexNested(wotnotData[0], wotnotMessages[h].index)
-                // index is found 
-                if(checker.length > 0){
-                    console.log("Thank god it's found", checker);
+                
+                // index is found and if it's not found it will be undefined
+                 if(checker!== undefined && checker.constructor === Array && (checker.length > 0 )){
+                    console.log("Thank god it's found", checker, wotnotMessages[h].index);
 
                     //access the properties there
-                    console.log(getCurrentIndexProp(checker, wotnotData[0]));
+                    const pathData = findByPath(checker, wotnotData[0]);
+                    previousPathData = pathData;
+                    console.log(pathData);
+
+                    // Check if it has already children
+                    if(pathData.hasOwnProperty('children')){
+                        // append data here
+                        console.log('append data here');
+                    }
+                    else{
+                        // previousCheckerIndex = pathData;
+                        // previousCheckerIndex.push(wotnotMessages[h].index);
+
+                        // check if found index has children already
+                        if(wotnotMessages[h].children.length > 0){
+                            console.log("------>",wotnotMessages[h]);
+                        
+                            // push new one
+                            pathData.children = []
+
+                            for(let insideY = 0; insideY < wotnotMessages[h].children.length; insideY++){
+                                
+                            }
+                            pathData.children.push(wotnotMessages[h]);
+                        }
+                        else if(wotnotMessages[h].type === 'informative'){
+                            
+                        }
+                    }
                 }
+                else{
+                    // Find the path is not found at all in wotnotdata
+                    console.log("Sorry I'm not found", wotnotMessages[h]);
+
+                    // check previous message type since if that is informative or something
+                    // we can directly append it there
+                    if(wotnotMessages[h-1].type === 'informative'){
+                        //access the properties there
+
+                        const subChecker = findIndexNested(wotnotData[0], wotnotMessages[h-1].index)
+                        if(subChecker!== undefined){
+                            const pathData = findByPath(subChecker, wotnotData[0]);
+                            console.log("Not found one", pathData);
+
+                            // Check if it has already children
+                            if(pathData.hasOwnProperty('children')){
+                                // append data here
+                                pathData.children.push(wotnotMessages[h]);
+                            }
+                            else{
+                                console.log("EMPTY")
+                                // create children since there is no child
+                                pathData.children = []
+                                let allChildren = [];
+                                for(let insideX = 0; insideX < wotnotMessages[h].children.length; insideX++){
+                                    let stepName, stepType;
+                                    const nameIndex = messages.findIndex(step => step.index === parseInt(wotnotMessages[h].children[insideX]));
+                                    if(nameIndex > -1){
+                                        stepName = messages[nameIndex].resolvedQuery;
+                                        stepType = messages[nameIndex].type;
+                                    }
+                                    allChildren.push({
+                                        index: parseInt(wotnotMessages[h].children[insideX]),
+                                        attributes: {
+                                            type: stepType
+                                        },
+                                        name: stepName
+                                    })
+                                }
+                                pathData.children.push({
+                                    index: wotnotMessages[h].index,
+                                    children: allChildren,
+                                    attributes: { type: wotnotMessages[h].type}
+                                })
+                            }
+                        }
+                        
+                    }
+                }
+            }
+            else{
+                // First time there will be no Data
+                console.log("First time there will be no Data");
+
+                // Add childrens to array
+                let child = []
+                for(let p=0; p < wotnotMessages[h].children.length; p++){
+
+                    // find index of the child for fetching details 
+                    let stepName, stepType;
+                    const nameIndex = messages.findIndex(step => step.index === wotnotMessages[h].children[p]);
+                    if(nameIndex > -1){
+                        stepName = messages[nameIndex].resolvedQuery;
+                        stepType = messages[nameIndex].type;
+                    }
+                    child.push({
+                        index: wotnotMessages[h].children[p],
+                        attributes: {
+                            type: stepType
+                        },
+                        name: stepName
+                    })
+                }
+
+                const mainChild = {
+                    name: messages[h].resolvedQuery,
+                    children: child,
+                    index: messages[h].index
+                }
+
+                wotnotData.push(mainChild);
             }
             
-            // Add childrens to array
-            let child = []
-            for(let p=0; p < wotnotMessages[h].children.length; p++){
-
-                // find index of the child for fetching details 
-                let stepName, stepType;
-                const nameIndex = messages.findIndex(step => step.index === wotnotMessages[h].children[p]);
-                if(nameIndex > -1){
-                    stepName = messages[nameIndex].resolvedQuery;
-                    stepType = messages[nameIndex].type;
-                }
-                child.push({
-                    index: wotnotMessages[h].children[p],
-                    attributes: {
-                        type: stepType
-                    },
-                    name: stepName
-                })
-            }
-
-            const mainChild = {
-                name: messages[h].resolvedQuery,
-                children: child,
-                index: messages[h].index
-            }
-
-            wotnotData.push(mainChild)
         }
         console.log(wotnotData);
         // console.log(JSON.stringify(wotnotData));
