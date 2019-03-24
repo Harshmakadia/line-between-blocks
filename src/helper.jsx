@@ -15,5 +15,5 @@ export const findByPath = function(path, data) {
 }
 
 export const trimName = function(name){
-    return name.slice(0, 10);
+    return name.slice(0, 18);
 }

@@ -10,7 +10,7 @@ const svgSquare = {
     shapeProps: {
         width: 140,
         height: 30,
-        x: -10,
+        x: -5,
         y: -25
     }
 };
@@ -126,7 +126,8 @@ class App extends React.Component {
                     index: messages[i].index,
                     children: childList,
                     type: messages[i].type,
-                    name: messages[i].resolvedQuery,
+                    name: trimName(messages[i].resolvedQuery),
+                    attributes : {type: messages[i].type, index: messages[i].index},
                     resolvedQuery : messages[i].resolvedQuery
                 }
                 jaiu.push(obj);
@@ -143,7 +144,8 @@ class App extends React.Component {
                     index: messages[i].index,
                     children: childList,
                     type: messages[i].type,
-                    name: messages[i].resolvedQuery,
+                    name: trimName(messages[i].resolvedQuery),
+                    attributes : {type: messages[i].type, index: messages[i].index},
                     resolvedQuery : messages[i].resolvedQuery
                 }
                 jaiu.push(defaultJumper);
@@ -153,10 +155,9 @@ class App extends React.Component {
                     index: messages[i].index,
                     children: [],
                     type: messages[i].type,
-                    name: messages[i].resolvedQuery,
+                    name: trimName(messages[i].resolvedQuery),
+                    attributes : {type: messages[i].type, index: messages[i].index},
                     resolvedQuery : messages[i].resolvedQuery
-                    // parent: messages[i].index - 1,
-                    // next_step: messages[i].index + 1
                 }
                 jaiu.push(obj);
             }
@@ -191,8 +192,6 @@ class App extends React.Component {
                         console.log('append data here');
                     }
                     else{
-                        // previousCheckerIndex = pathData;
-                        // previousCheckerIndex.push(wotnotMessages[h].index);
 
                         // check if found index has children already
                         if(wotnotMessages[h].index === 50){
@@ -223,12 +222,6 @@ class App extends React.Component {
                             }
 
                             pathData.children = allChildrenY;
-                            // pathData.children.push(
-                                    // index: wotnotMessages[h].index,
-                                    //children: allChildrenY,
-                                    // allChildrenY[0]
-                                    //attributes: { type: wotnotMessages[h].type}
-                            // )
                         }
                         else if(wotnotMessages[h].type === 'informative'){
                             // pathData.children = [{"name": "Harsh"}]
@@ -253,8 +246,6 @@ class App extends React.Component {
                             // Check if it has already children
                             if(pathData.hasOwnProperty('children')){
                                 // append data here
-                                console.log("------HARSH------>", pathData)
-                                console.log("------HARSH------>", wotnotMessages[h].children.length);
                                 if(wotnotMessages[h].children.length > 0){
                                     pathData.children = []
                                     let allChildrenZ = [];
@@ -275,33 +266,13 @@ class App extends React.Component {
                                                 })
                                             }
                                     }
-                                    pathData.children = allChildrenZ;
-                                
+                                    pathData.children = allChildrenZ;   
                                 }
                                 else{
+                                    console.log("\x1b[43mdfddfdfdfdfd", wotnotMessages[h]);
+                                    console.log("\x1b[43mdHighlight", pathData);
                                     pathData.children.push(wotnotMessages[h]);
                                 }
-                                //pathData.children.push(wotnotMessages[h]);
-
-                                //pathData.children = []
-                                // let allChildrenZ = [];
-                                // for(let insideZ = 0; insideZ < wotnotMessages[h].children.length; insideZ++){
-                                //     let stepName, stepType;
-                                //         const nameIndex = messages.findIndex(step => step.index === parseInt(wotnotMessages[h].children[insideZ]));
-                                //         if(nameIndex > -1){
-                                //             stepName = messages[nameIndex].resolvedQuery;
-                                //             stepType = messages[nameIndex].type;
-                                            
-                                //             allChildrenZ.push({
-                                //                 index: parseInt(wotnotMessages[h].children[insideZ]),
-                                //                 attributes: {
-                                //                     type: stepType
-                                //                 },
-                                //                 name: trimName(stepName)
-                                //             })
-                                //         }
-                                // }
-                                // pathData.children = allChildrenZ;
                                 
                             }
                             else{
@@ -356,7 +327,8 @@ class App extends React.Component {
                     child.push({
                         index: wotnotMessages[h].children[p],
                         attributes: {
-                            type: stepType
+                            type: stepType,
+                            index: wotnotMessages[h].children[p]
                         },
                         name: trimName(stepName)
                     })
