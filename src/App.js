@@ -194,11 +194,7 @@ class App extends React.Component {
                     else{
 
                         // check if found index has children already
-                        if(wotnotMessages[h].index === 50){
-                            console.log("yesy");
-                        }
                         if(wotnotMessages[h].children.length > 0){
-                            console.log("------>",wotnotMessages[h]);
                         
                             // push new one
                             pathData.children = []
@@ -238,16 +234,15 @@ class App extends React.Component {
                         //access the properties there
 
                         const subChecker = findIndexNested(wotnotData[0], wotnotMessages[h-1].index);
-                        console.log("------------>", subChecker); 
                         if(subChecker!== undefined){
                             const pathData = findByPath(subChecker, wotnotData[0]);
                             console.log("Not found one", pathData);
 
                             // Check if it has already children
-                            if(pathData.hasOwnProperty('children')){
+                            if(pathData.hasOwnProperty('children') && pathData!== undefined){
                                 // append data here
                                 if(wotnotMessages[h].children.length > 0){
-                                    pathData.children = []
+                                    pathData.children = [];
                                     let allChildrenZ = [];
                                     for(let insideZ = 0; insideZ < wotnotMessages[h].children.length; insideZ++){
                                         let stepName, stepType;
@@ -269,14 +264,12 @@ class App extends React.Component {
                                     pathData.children = allChildrenZ;   
                                 }
                                 else{
-                                    console.log("\x1b[43mdfddfdfdfdfd", wotnotMessages[h]);
-                                    console.log("\x1b[43mdHighlight", pathData);
+                                    console.log("\x1b[43mHighlight", pathData);
                                     pathData.children.push(wotnotMessages[h]);
                                 }
                                 
                             }
                             else{
-                                console.log("EMPTY")
                                 // create children since there is no child
                                 pathData.children = []
                                 let allChildren = [];
@@ -306,6 +299,9 @@ class App extends React.Component {
                             }
                         }
                         
+                    }
+                    else if(wotnotMessages[h-1].type === 'options'){
+                        console.log("\x1B[34mNew Condition", wotnotMessages[h]);
                     }
                 }
             }
