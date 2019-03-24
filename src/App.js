@@ -88,7 +88,8 @@ class App extends React.Component {
     constructor() {
         super();
         this.state = {
-            name: "Nothing"
+            name: "Nothing",
+            wotnotData: [{nama : "df"}]
         }
         this.trackData = this.trackData.bind(this);
         this.populateData = this.populateData.bind(this);
@@ -125,6 +126,7 @@ class App extends React.Component {
                     index: messages[i].index,
                     children: childList,
                     type: messages[i].type,
+                    name: messages[i].resolvedQuery,
                     resolvedQuery : messages[i].resolvedQuery
                 }
                 jaiu.push(obj);
@@ -141,6 +143,7 @@ class App extends React.Component {
                     index: messages[i].index,
                     children: childList,
                     type: messages[i].type,
+                    name: messages[i].resolvedQuery,
                     resolvedQuery : messages[i].resolvedQuery
                 }
                 jaiu.push(defaultJumper);
@@ -150,6 +153,7 @@ class App extends React.Component {
                     index: messages[i].index,
                     children: [],
                     type: messages[i].type,
+                    name: messages[i].resolvedQuery,
                     resolvedQuery : messages[i].resolvedQuery
                     // parent: messages[i].index - 1,
                     // next_step: messages[i].index + 1
@@ -165,7 +169,7 @@ class App extends React.Component {
         const wotnotData = [];
         let previousPathData = [];
         // wotnotMessages.length
-        for(let h=0; h < 6; h++){
+        for(let h=0; h < 21; h++){
 
             // Before processing it check if index is already present
             // In the nested structure of parent child
@@ -196,11 +200,31 @@ class App extends React.Component {
                         
                             // push new one
                             pathData.children = []
-
+                            let allChildrenY = [];
                             for(let insideY = 0; insideY < wotnotMessages[h].children.length; insideY++){
-                                
+                                let stepName, stepType;
+                                    const nameIndex = messages.findIndex(step => step.index === parseInt(wotnotMessages[h].children[insideY]));
+                                    if(nameIndex > -1){
+                                        stepName = messages[nameIndex].resolvedQuery;
+                                        stepType = messages[nameIndex].type;
+                                        
+                                        allChildrenY.push({
+                                            index: parseInt(wotnotMessages[h].children[insideY]),
+                                            attributes: {
+                                                type: stepType
+                                            },
+                                            name: stepName
+                                        })
+                                    }
                             }
-                            pathData.children.push(wotnotMessages[h]);
+
+                            pathData.children = allChildrenY;
+                            // pathData.children.push(
+                                    // index: wotnotMessages[h].index,
+                                    //children: allChildrenY,
+                                    // allChildrenY[0]
+                                    //attributes: { type: wotnotMessages[h].type}
+                            // )
                         }
                         else if(wotnotMessages[h].type === 'informative'){
                             
@@ -213,7 +237,7 @@ class App extends React.Component {
 
                     // check previous message type since if that is informative or something
                     // we can directly append it there
-                    if(wotnotMessages[h-1].type === 'informative'){
+                    if(wotnotMessages[h-1].type === 'informative' || wotnotMessages[h-1].type === 'input' || wotnotMessages[h-1].type === 'input (name)' || wotnotMessages[h-1].type === 'input (email)' || wotnotMessages[h-1].type === 'custom_phone_input'){
                         //access the properties there
 
                         const subChecker = findIndexNested(wotnotData[0], wotnotMessages[h-1].index)
@@ -237,18 +261,20 @@ class App extends React.Component {
                                     if(nameIndex > -1){
                                         stepName = messages[nameIndex].resolvedQuery;
                                         stepType = messages[nameIndex].type;
+
+                                        allChildren.push({
+                                            index: parseInt(wotnotMessages[h].children[insideX]),
+                                            attributes: {
+                                                type: stepType
+                                            },
+                                            name: stepName
+                                        })
                                     }
-                                    allChildren.push({
-                                        index: parseInt(wotnotMessages[h].children[insideX]),
-                                        attributes: {
-                                            type: stepType
-                                        },
-                                        name: stepName
-                                    })
                                 }
                                 pathData.children.push({
                                     index: wotnotMessages[h].index,
                                     children: allChildren,
+                                    name: wotnotMessages[h].resolvedQuery,
                                     attributes: { type: wotnotMessages[h].type}
                                 })
                             }
@@ -292,6 +318,7 @@ class App extends React.Component {
             
         }
         console.log(wotnotData);
+        this.setState({wotnotData});
         // console.log(JSON.stringify(wotnotData));
         
     }
@@ -305,7 +332,7 @@ class App extends React.Component {
                     collapsible={true}
                     onClick={(nodeData, evt) => this.trackData(nodeData, evt)}
                     nodeSvgShape={svgSquare}
-                    data={myTreeData}
+                    data={this.state.wotnotData}
                     pathFunc="straight"
                     orientation="vertical"
                 />
