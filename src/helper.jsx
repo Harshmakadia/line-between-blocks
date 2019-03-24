@@ -13,3 +13,7 @@ export const findByPath = function(path, data) {
     // console.log("---->", data);
     return data
 }
+
+export const trimName = function(name){
+    return name.slice(0, 10);
+}

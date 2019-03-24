@@ -3,7 +3,7 @@ import './App.css';
 import Tree from "react-d3-tree";
 import { getMasterData } from './masterData.jsx';
 import { findIndexNested }  from './helper.jsx';
-import { findByPath } from './helper.jsx';
+import { findByPath, trimName } from './helper.jsx';
 
 const svgSquare = {
     shape: "rect",
@@ -169,7 +169,7 @@ class App extends React.Component {
         const wotnotData = [];
         let previousPathData = [];
         // wotnotMessages.length
-        for(let h=0; h < 21; h++){
+    for(let h=0; h < 55; h++){
 
             // Before processing it check if index is already present
             // In the nested structure of parent child
@@ -195,6 +195,9 @@ class App extends React.Component {
                         // previousCheckerIndex.push(wotnotMessages[h].index);
 
                         // check if found index has children already
+                        if(wotnotMessages[h].index === 50){
+                            console.log("yesy");
+                        }
                         if(wotnotMessages[h].children.length > 0){
                             console.log("------>",wotnotMessages[h]);
                         
@@ -211,9 +214,10 @@ class App extends React.Component {
                                         allChildrenY.push({
                                             index: parseInt(wotnotMessages[h].children[insideY]),
                                             attributes: {
-                                                type: stepType
+                                                type: stepType,
+                                                index: parseInt(wotnotMessages[h].children[insideY])
                                             },
-                                            name: stepName
+                                            name: trimName(stepName)
                                         })
                                     }
                             }
@@ -227,7 +231,7 @@ class App extends React.Component {
                             // )
                         }
                         else if(wotnotMessages[h].type === 'informative'){
-                            
+                            // pathData.children = [{"name": "Harsh"}]
                         }
                     }
                 }
@@ -237,10 +241,11 @@ class App extends React.Component {
 
                     // check previous message type since if that is informative or something
                     // we can directly append it there
-                    if(wotnotMessages[h-1].type === 'informative' || wotnotMessages[h-1].type === 'input' || wotnotMessages[h-1].type === 'input (name)' || wotnotMessages[h-1].type === 'input (email)' || wotnotMessages[h-1].type === 'custom_phone_input'){
+                    if(wotnotMessages[h-1].type === 'informative' || wotnotMessages[h-1].type === 'input' || wotnotMessages[h-1].type === 'input (name)' || wotnotMessages[h-1].type === 'input (email)' || wotnotMessages[h-1].type === 'custom_phone_input' || wotnotMessages[h-1].type === 'codeblock' || wotnotMessages[h-1].type === 'cardview'){
                         //access the properties there
 
-                        const subChecker = findIndexNested(wotnotData[0], wotnotMessages[h-1].index)
+                        const subChecker = findIndexNested(wotnotData[0], wotnotMessages[h-1].index);
+                        console.log("------------>", subChecker); 
                         if(subChecker!== undefined){
                             const pathData = findByPath(subChecker, wotnotData[0]);
                             console.log("Not found one", pathData);
@@ -248,7 +253,56 @@ class App extends React.Component {
                             // Check if it has already children
                             if(pathData.hasOwnProperty('children')){
                                 // append data here
-                                pathData.children.push(wotnotMessages[h]);
+                                console.log("------HARSH------>", pathData)
+                                console.log("------HARSH------>", wotnotMessages[h].children.length);
+                                if(wotnotMessages[h].children.length > 0){
+                                    pathData.children = []
+                                    let allChildrenZ = [];
+                                    for(let insideZ = 0; insideZ < wotnotMessages[h].children.length; insideZ++){
+                                        let stepName, stepType;
+                                            const nameIndex = messages.findIndex(step => step.index === parseInt(wotnotMessages[h].children[insideZ]));
+                                            if(nameIndex > -1){
+                                                stepName = messages[nameIndex].resolvedQuery;
+                                                stepType = messages[nameIndex].type;
+                                                
+                                                allChildrenZ.push({
+                                                    index: parseInt(wotnotMessages[h].children[insideZ]),
+                                                    attributes: {
+                                                        type: stepType,
+                                                        index: parseInt(wotnotMessages[h].children[insideZ])
+                                                    },
+                                                    name: trimName(stepName)
+                                                })
+                                            }
+                                    }
+                                    pathData.children = allChildrenZ;
+                                
+                                }
+                                else{
+                                    pathData.children.push(wotnotMessages[h]);
+                                }
+                                //pathData.children.push(wotnotMessages[h]);
+
+                                //pathData.children = []
+                                // let allChildrenZ = [];
+                                // for(let insideZ = 0; insideZ < wotnotMessages[h].children.length; insideZ++){
+                                //     let stepName, stepType;
+                                //         const nameIndex = messages.findIndex(step => step.index === parseInt(wotnotMessages[h].children[insideZ]));
+                                //         if(nameIndex > -1){
+                                //             stepName = messages[nameIndex].resolvedQuery;
+                                //             stepType = messages[nameIndex].type;
+                                            
+                                //             allChildrenZ.push({
+                                //                 index: parseInt(wotnotMessages[h].children[insideZ]),
+                                //                 attributes: {
+                                //                     type: stepType
+                                //                 },
+                                //                 name: trimName(stepName)
+                                //             })
+                                //         }
+                                // }
+                                // pathData.children = allChildrenZ;
+                                
                             }
                             else{
                                 console.log("EMPTY")
@@ -265,17 +319,18 @@ class App extends React.Component {
                                         allChildren.push({
                                             index: parseInt(wotnotMessages[h].children[insideX]),
                                             attributes: {
-                                                type: stepType
+                                                type: stepType,
+                                                index: parseInt(wotnotMessages[h].children[insideX])
                                             },
-                                            name: stepName
+                                            name: trimName(stepName)
                                         })
                                     }
                                 }
                                 pathData.children.push({
                                     index: wotnotMessages[h].index,
                                     children: allChildren,
-                                    name: wotnotMessages[h].resolvedQuery,
-                                    attributes: { type: wotnotMessages[h].type}
+                                    name: trimName(wotnotMessages[h].resolvedQuery),
+                                    attributes: { type: wotnotMessages[h].type, index: wotnotMessages[h].index}
                                 })
                             }
                         }
@@ -303,12 +358,12 @@ class App extends React.Component {
                         attributes: {
                             type: stepType
                         },
-                        name: stepName
+                        name: trimName(stepName)
                     })
                 }
 
                 const mainChild = {
-                    name: messages[h].resolvedQuery,
+                    name: trimName(messages[h].resolvedQuery),
                     children: child,
                     index: messages[h].index
                 }
